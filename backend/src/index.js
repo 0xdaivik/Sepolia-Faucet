@@ -1,4 +1,3 @@
-
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -9,24 +8,9 @@ const dripRoutes = require('./routes/drip');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-
-// ✅ Enable CORS for all routes
-app.use(cors({
-  origin: 'https://sepolia-faucet-lilac.vercel.app', // or '*'
-  methods: ['GET', 'POST', 'OPTIONS'],
-  credentials: true,
-}));
-
-// Other middleware
-app.use(express.json());
-app.use('/api', require('./routes/apiRoutes')); // or wherever your router is
-
-// Security middleware
-app.use(helmet());
-
-// CORS configuration
-
+// ✅ Setup CORS — Allow specific frontend origin
 const allowedOrigins = [
+  'https://sepolia-faucet-lilac.vercel.app',
   'http://localhost:8080',
   'http://localhost:5173',
   'http://192.168.29.79:8080'
@@ -34,7 +18,7 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: function (origin, callback) {
-    // allow requests with no origin (like mobile apps or curl)
+    // Allow requests with no origin (like curl/postman)
     if (!origin) return callback(null, true);
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
@@ -42,62 +26,52 @@ app.use(cors({
       return callback(new Error('Not allowed by CORS'));
     }
   },
-  credentials: true
+  methods: ['GET', 'POST', 'OPTIONS'],
+  credentials: true,
 }));
 
-// Logging middleware
+// ✅ Other middlewares
+app.use(helmet());
 app.use(morgan('combined'));
-
-// Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Health check endpoint
+// ✅ Health check
 app.get('/health', (req, res) => {
-  res.status(200).json({ 
-    status: 'ok', 
+  res.status(200).json({
+    status: 'ok',
     timestamp: new Date().toISOString(),
     service: 'sepolia-faucet-backend'
   });
 });
 
-// API routes
+// ✅ Routes
 app.use('/api', dripRoutes);
 
-// 404 handler
+// ✅ 404 fallback
 app.use('*', (req, res) => {
-  res.status(404).json({ 
+  res.status(404).json({
     error: 'Not Found',
     message: 'The requested resource was not found',
     path: req.originalUrl
   });
 });
 
-// Global error handler
+// ✅ Global error handler
 app.use((err, req, res, next) => {
-  console.error('Unhandled error:', err);
-  res.status(500).json({ 
+  console.error('Unhandled error:', err.message);
+  res.status(500).json({
     error: 'Internal Server Error',
     message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
   });
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`🚀 Sepolia Faucet Backend running on port ${PORT}`);
-  console.log(`📊 Health check: http://localhost:${PORT}/health`);
-  console.log(`🔗 Environment: ${process.env.NODE_ENV || 'development'}`);
-});
-
-// Graceful shutdown
-process.on('SIGTERM', () => {
-  console.log('SIGTERM received, shutting down gracefully');
-  process.exit(0);
-});
-
-process.on('SIGINT', () => {
-  console.log('SIGINT received, shutting down gracefully');
-  process.exit(0);
-});
+// ✅ Start server (local only)
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`📊 Health check: http://localhost:${PORT}/health`);
+  });
+}
 
 module.exports = app;

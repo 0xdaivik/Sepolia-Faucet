@@ -50,7 +50,7 @@ const FaucetForm: React.FC = () => {
 
     try {
       const backendUrl = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:5001';
-      const apiResponse = await fetch(`${backendUrl}/api/drip`, {
+      const apiResponse = await fetch(`${backendUrl}/api/drip/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
