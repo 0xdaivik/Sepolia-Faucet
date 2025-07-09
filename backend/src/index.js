@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 5000;
 
 // ✅ Setup CORS — Allow specific frontend origin
 const allowedOrigins = [
-  'https://sepolia-faucet-lilac.vercel.app',
+  'https://sepolia-faucet-inoo.vercel.app/',
   'http://localhost:8080',
   'http://localhost:5173',
   'http://192.168.29.79:8080'
