@@ -1,3 +1,10 @@
+import Cors from 'cors';
+
+// Init middleware
+const cors = Cors({
+  origin: '*', // Or specify: ['https://sepolia-faucet-lilac.vercel.app']
+  methods: ['POST', 'GET', 'OPTIONS'],
+});
 
 const express = require('express');
 const router = express.Router();
