@@ -50,7 +50,7 @@ app.get('/health', (req, res) => {
 });
 
 // API routes
-app.use('api', dripRoutes);
+app.use('/api', dripRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {
