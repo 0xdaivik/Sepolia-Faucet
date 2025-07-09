@@ -9,6 +9,18 @@ const dripRoutes = require('./routes/drip');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+
+// ✅ Enable CORS for all routes
+app.use(cors({
+  origin: 'https://sepolia-faucet-lilac.vercel.app', // or '*'
+  methods: ['GET', 'POST', 'OPTIONS'],
+  credentials: true,
+}));
+
+// Other middleware
+app.use(express.json());
+app.use('/api', require('./routes/apiRoutes')); // or wherever your router is
+
 // Security middleware
 app.use(helmet());
 
