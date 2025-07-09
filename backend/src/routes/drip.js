@@ -1,5 +1,3 @@
-import Cors from 'cors';
-
 // Init middleware
 const cors = Cors({
   origin: '*', // Or specify: ['https://sepolia-faucet-lilac.vercel.app']
